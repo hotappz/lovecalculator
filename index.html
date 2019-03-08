@@ -663,30 +663,30 @@
               break;
           }
 
-          
+          $(".pa-output-container").show();
+          var gauge1 = loadLiquidFillGauge("fillgauge1", partner_analysis_result*20);
+          $(".pa-quote").text(pa_output_quote);
           
           var pa_data = {
             "pa_lead": {
-                      "boy_name": boy_name,
-                      "girl_name": girl_name,
-                      "platform": navigator.platform,
-                      "vendor" : navigator.vendor,
-                      "ip_address": pa_ip_address,
-                      "latitude": latitude,
-                      "longitude": longitude,
-                      "pa_score": partner_analysis_result*20
-                      }};
-                      debugger
+              "boy_name": boy_name,
+              "girl_name": girl_name,
+              "platform": navigator.platform,
+              "vendor" : navigator.vendor,
+              "ip_address": pa_ip_address,
+              "latitude": latitude,
+              "longitude": longitude,
+              "pa_score": partner_analysis_result*20
+            }};
 
           $.post("https://sbackend.getspini.com/pa_leads",pa_data,
           function(data, status){
             // liquid graph
-            $(".pa-output-container").show();
-            var gauge1 = loadLiquidFillGauge("fillgauge1", partner_analysis_result*20);
-            $(".pa-quote").text(pa_output_quote);
+            
           });
 
           
+        
         
         });
 
