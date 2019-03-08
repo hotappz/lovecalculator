@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+    <script src="assets/js/liquidFillGauge.js" language="JavaScript"></script>
+    <link href="https://fonts.googleapis.com/css?family=Laila:300,400,500,600,700" rel="stylesheet">
+    <title>Love Calculator</title>
+    <style type="text/css">
+      body{
+        background: #16a358;
+        color: #fff;
+        text-align: center;
+        font-family: 'Laila', serif;
+      }
+      h1, h2, h3, h4, h5, h6{
+        letter-spacing: 1px;
+      }
+      .rating {
+        display: inline-block;
+        position: relative;
+        height: 50px;
+        line-height: 50px;
+        font-size: 50px;
+      }
+
+      .rating label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .rating label:last-child {
+        position: static;
+      }
+
+      .rating label:nth-child(1) {
+        z-index: 5;
+      }
+
+      .rating label:nth-child(2) {
+        z-index: 4;
+      }
+
+      .rating label:nth-child(3) {
+        z-index: 3;
+      }
+
+      .rating label:nth-child(4) {
+        z-index: 2;
+      }
+
+      .rating label:nth-child(5) {
+        z-index: 1;
+      }
+
+      .rating label input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+      }
+
+      .rating label .icon {
+        float: left;
+        color: transparent;
+      }
+
+      .rating label:last-child .icon {
+        color: #000;
+      }
+
+      .rating:not(:hover) label input:checked ~ .icon,
+      .rating:hover label:hover input ~ .icon {
+        color: #ffa800;
+      }
+
+      .rating label input:focus:not(:checked) ~ .icon:last-child {
+        color: #000;
+        text-shadow: 0 0 5px #ffa800;
+      }
+      /* ======================================================================================= */
+      .rate-girl-quality, .rate-boy-quality{
+        display: none;
+      }
+      .rate-girl-quality ul, .rate-boy-quality ul{
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .rate-girl-quality ul li{
+        display: none;
+      }
+      /*.rate-girl-quality ul li:nth-child(1){
+        display: none;
+      }*/
+      .rate-boy-quality ul li{
+        display: none;
+      }
+      /*.rate-boy-quality ul li:nth-child(1){
+        display: none;
+      }*/
+      .pa-footer-navigation{
+
+      }
+      .select-gender-container{
+        display: none;
+      }
+      .select-gender-container span{
+        display: inline-block;
+      }
+      .pa-female{
+        height: 300px;
+        width: 100px;
+        margin-left: 50px;
+        background-image: url(assets/images/sprite-gender.png);
+        background-repeat: no-repeat;
+        background-position: 12px 0%;
+      }
+      .pa-male{
+        height: 300px;
+        width: 100px;
+        margin-right: 50px;
+        background-image: url(assets/images/sprite-gender.png);
+        background-repeat: no-repeat;
+        background-position: -70px 0%;
+      }
+      .pa-bg-blue{
+        background-color: #45a4ec;
+      }
+      .pa-bg-pink{
+        background-color: #dd30ac;
+      }
+      .pa-previous{
+        display: block;
+        background: #ffa800;
+        color: #fff;
+        width: 100%;
+        padding: 10px 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      .submit-pa-result, .pa-move-next-section{
+        display: block;
+        background: #E91E63;
+        color: #fff;
+        padding: 10px 35px;
+        border-radius: 31px;
+        margin: auto;
+      }
+      .pa-main-heading{
+        margin: 20px 0px;
+      }
+      .pa-identity-heading{
+        margin: 30px 0;
+      }
+      .pa-output-container{
+
+      }
+      .pa-output-container p{
+        margin: 20px 0 0;
+        text-align: justify;
+        padding: 0 20px;
+      }
+      .pa-output-container{
+        display: none;
+      }
+      .pa-user-info-container{
+        padding: 10px;
+      }
+      .pa-user-info-container input{
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="pa-main-heading">Love Calculator</h1>
+
+    <div class="pa-user-info-container">
+     
+        <input type="text" name="boyname" class="form-control" placeholder="Enter boy name" required>
+        <input type="text" name="girlname" class="form-control" placeholder="Enter girl name" required>
+        <button type="submit" class="btn btn-danger" id="pa-user-info-submit">Start</button>
+      
+    </div>
+
+    <div class="select-gender-container">
+      <h3 style="margin-bottom: 20px;">Are you a boy or girl ?</h3>
+      <span class="pa-male"></span>
+      <span class="pa-female"></span>
+    </div>
+    <!-- Rate girl quality starts -->
+    <div class="rate-girl-quality">
+      <h3 class="pa-identity-heading">Rate your girls quality</h3>
+      <ul>
+        <li>
+          <!-- cuteness level starts -->
+          <h4>Cuteness level</h4>
+          <form class="rating" id="cuteness_level">
+            <label>
+              <input type="radio" name="cuteness_level" value="1" class="cuteness_level"/>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="cuteness_level" value="2" class="cuteness_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="cuteness_level" value="3" class="cuteness_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>   
+            </label>
+            <label>
+              <input type="radio" name="cuteness_level" value="4" class="cuteness_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="cuteness_level" value="5" class="cuteness_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+          </form>
+
+            <!-- cuteness level ends -->
+        </li>
+        <li>
+          <!-- kindness level starts -->
+          <h4>Kindness level</h4>
+          <form class="rating" id="kindness_level">
+            <label>
+              <input type="radio" name="kindness_level" value="1" class="kindness_level" />
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="kindness_level" value="2" class="kindness_level"/>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="kindness_level" value="3" class="kindness_level"/>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>   
+            </label>
+            <label>
+              <input type="radio" name="kindness_level" value="4" class="kindness_level"/>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="kindness_level" value="5" class="kindness_level"/>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+          </form>
+          <button class="pa-previous">Back</button>
+
+          <!-- kindness level ends -->
+        </li>
+         <li>
+          <!-- emotional level starts -->
+          <h4>Emotional level</h4>
+        <form class="rating" id="emotional_level">
+          <label>
+            <input type="radio" name="emotional_level" value="1" class="emotional_level"/>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="emotional_level" value="2" class="emotional_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="emotional_level" value="3" class="emotional_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>   
+          </label>
+          <label>
+            <input type="radio" name="emotional_level" value="4" class="emotional_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="emotional_level" value="5" class="emotional_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+        </form>
+         <button class="pa-previous">Back</button>
+
+          <!-- emotional level ends -->
+        </li>
+         <li>
+          <!-- happy level starts -->
+          <h4>Happy level</h4>
+        <form class="rating" id="happy_level">
+          <label>
+            <input type="radio" name="happy_level" value="1" class="happy_level"/>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="happy_level" value="2" class="happy_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="happy_level" value="3" class="happy_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>   
+          </label>
+          <label>
+            <input type="radio" name="happy_level" value="4" class="happy_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="happy_level" value="5" class="happy_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+        </form>
+         <button class="pa-previous">Back</button>
+          <!-- happy level ends -->
+        </li>
+        <li>
+          <button class="pa-move-next-section">Rate your quality</button>
+          <button class="submit-pa-result">result</button>
+        </li>
+        <li>
+          <button class="submit-pa-result">result</button>
+          <button class="pa-previous">Back</button>
+        </li>
+      </ul>
+    </div>
+    <!-- Rate girl quality ends -->
+
+    <!-- Rate boy quality starts -->
+    <div class="rate-boy-quality">
+      <h3 class="pa-identity-heading">Rate your quality</h3>
+      <ul>
+        <li>
+          <!-- handsome level starts -->
+          <h4>Handsome level</h4>
+          <form class="rating" id="handsome_level">
+            <label>
+              <input type="radio" name="handsome_level" value="1" class="handsome_level" />
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="handsome_level" value="2" class="handsome_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="handsome_level" value="3" class="handsome_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>   
+            </label>
+            <label>
+              <input type="radio" name="handsome_level" value="4" class="handsome_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="handsome_level" value="5" class="handsome_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+          </form>
+          <!-- <button class="pa-previous">Back</button> -->
+
+          <!-- handsome level ends -->
+        </li>
+        <li>
+          <!-- Anger level starts -->
+          <h4>Anger level</h4>
+          <form class="rating" id="anger_level">
+            <label>
+              <input type="radio" name="anger_level" value="1" class="anger_level" />
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="anger_level" value="2" class="anger_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="anger_level" value="3" class="anger_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>   
+            </label>
+            <label>
+              <input type="radio" name="anger_level" value="4" class="anger_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+            <label>
+              <input type="radio" name="anger_level" value="5" class="anger_level" />
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+              <span class="icon">★</span>
+            </label>
+          </form>
+          <button class="pa-previous">Back</button>
+
+          <!-- Anger level ends -->
+        </li>
+         <li>
+          <!-- cuteness level starts -->
+          <h4>Loyal level</h4>
+        <form class="rating" id="loyal_level">
+          <label>
+            <input type="radio" name="loyal_level" value="1" class="loyal_level"/>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="loyal_level" value="2" class="loyal_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="loyal_level" value="3" class="loyal_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>   
+          </label>
+          <label>
+            <input type="radio" name="loyal_level" value="4" class="loyal_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="loyal_level" value="5" class="loyal_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+        </form>
+        <button class="pa-previous">Back</button>
+          <!-- loyal level ends -->
+        </li>
+         <li>
+          <!-- cuteness level starts -->
+          <h4>Brave level</h4>
+        <form class="rating" id="brave_level">
+          <label>
+            <input type="radio" name="brave_level" value="1" class="brave_level"/>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="brave_level" value="2" class="brave_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="brave_level" value="3" class="brave_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>   
+          </label>
+          <label>
+            <input type="radio" name="brave_level" value="4" class="brave_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+          <label>
+            <input type="radio" name="brave_level" value="5" class="brave_level" />
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+            <span class="icon">★</span>
+          </label>
+        </form>
+          <!-- brave level ends -->
+          <button class="pa-previous">Back</button>
+        </li>
+        <li>
+          <button class="pa-move-next-section">Rate your quality</button>
+          <button class="submit-pa-result">result</button>
+        </li>
+        <li>
+          <button class="pa-previous">Back</button>
+          <button class="submit-pa-result">result</button>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Rate boy quality ends -->
+
+    <div class="pa-output-container">
+      <svg id="fillgauge1" width="97%" height="250"></svg>
+      <p class="pa-quote"></p>
+    </div>
+
+
+    
+    
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        var cuteness_level, kindness_level, handsome_level, anger_level, quality_id_name;
+        var cuteness_handsome_result, kindness_anger_result, partner_analysis_value, partner_analysis_result, pa_gender, pa_output_quote, boy_name, girl_name, latitude, longitude, pa_ip_address; 
+
+
+        $('input[name="cuteness_level"]').change(function() {
+          cuteness_level = this.value;
+          // console.log("cuteness_level"+this.value);
+          
+      
+        });
+        $('input[name="kindness_level"]').change(function() {
+          // console.log("kindness_level"+this.value);
+          kindness_level = this.value;
+          
+        });
+        $('input[name="handsome_level"]').change(function() {
+          // console.log("handsome_level"+this.value);
+          handsome_level = this.value;
+
+          
+        });
+        $('input[name="anger_level"]').change(function() {
+          // console.log("anger_level"+this.value);
+          anger_level = this.value;
+          
+        });
+
+        // next page move script
+        $(':radio').click(function() {
+         $(this).parents("li").slideUp(1000).next("li").show();
+        });
+
+        // previous page move script
+        $(".pa-previous").click(function(){
+          $(this).parents("li").hide().prev("li").show();
+        });
+
+        // geolocation finder
+
+        function getLocation() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+          } else { 
+            
+          }
+        }
+
+        function showPosition(position) {
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+        }
+
+        
+
+        $(".submit-pa-result").click(function(){
+          $(this).hide();
+          cuteness_handsome_result = cuteness_level - handsome_level;
+          kindness_anger_result = (Math.abs(kindness_level)) - anger_level;
+          partner_analysis_value = (Math.abs(cuteness_handsome_result) + Math.abs(kindness_anger_result)) / 2;
+           // debugger
+          switch (partner_analysis_value) {
+            case 0:
+              partner_analysis_result = 5;
+              pa_output_quote = "Wow. This is rare. This is a match made in heaven. Go make out, NOW. The greatest happiness of your life will be the conviction that you guys are in love!!";
+              break;
+            case 0.5:
+              partner_analysis_result = 4.5;
+              pa_output_quote = "We thinks that a relationship between "+boy_name+" and "+girl_name+" has a very good chance of being successful, but this doesn't mean that you don't have to work on the relationship. Remember that every relationship needs spending time together, talking with each other etc."
+              break;
+            case 1:
+               partner_analysis_result = 4;
+               pa_output_quote = ""+boy_name+" and "+girl_name+" sitting in the tree, K-I-S-S-I-N-G, First comes love, Then comes marriage, Then comes a baby in a baby carriage. Aww, you're a great match for each other."
+              break;
+            case 1.5:
+              partner_analysis_result = 3.5;
+              pa_output_quote = "For you guys, Love is composed of a single soul inhabiting two bodies."
+              break;
+            case 2:
+              partner_analysis_result = 3;
+              pa_output_quote = "Your love is the he best love; the kind that awakens the soul; that makes both of you reach for more."
+              break;
+            case 2.5:
+              partner_analysis_result = 2.5;
+              pa_output_quote = "There's a slim chance this might work. It's gonna be tough, but whatever, YOLO."
+              break;
+            case 3:
+              partner_analysis_result = 2;
+              pa_output_quote = "Although our sophisticated algorithms say that it won't work out, why not give it a shot? We're sure you can beat probability."
+              break;
+            case 3.5:
+              partner_analysis_result = 1.5;
+              pa_output_quote = "We hate to be the bearers of bad news, but this relationship has as much chance of working as Angelina and Brad Pitt. Wait, are they still together? Guess you got a shot, but it ain't gonna be easy."
+              break;
+            case 4:
+              partner_analysis_result = 1;
+              pa_output_quote = "The chance of a relationship working out between "+boy_name+" and "+girl_name+"  is not very big, but a relationship is very well possible, if the two of you really want it to, and are prepared to make some sacrifices for it. You'll have to spend a lot of quality time together. You must be aware of the fact that this relationship might not work out at all, no matter how much time you invest in it."
+              break;
+            case 4.5:
+              partner_analysis_result = 0.5;
+              pa_output_quote = "We thinks a relationship might work out between "+boy_name+" and "+girl_name+" , but the chance is very small. A successful relationship is possible, but you both have to work on it. Do not sit back and think that it will all work out fine, because it might not be working out the way you wanted it to. Spend as much time with each other as possible. Again, the chance of this relationship working out is very small, so even when you do work hard on it, it still might not work out."
+              break;
+            case 5:
+              partner_analysis_result = 0;
+              pa_output_quote = "If you're together already, we predict a breakup in 10, 9, 8... You get the picture. If you're not together, run away and stay clear. Sorry, but this ain't gonna work."
+              break;
+          }
+
+          
+          
+          var pa_data = {
+            "pa_lead": {
+                      "boy_name": boy_name,
+                      "girl_name": girl_name,
+                      "platform": navigator.platform,
+                      "vendor" : navigator.vendor,
+                      "ip_address": pa_ip_address,
+                      "latitude": latitude,
+                      "longitude": longitude,
+                      "pa_score": partner_analysis_result*20
+                      }};
+                      debugger
+
+          $.post("https://sbackend.getspini.com/pa_leads",pa_data,
+          function(data, status){
+            // liquid graph
+            $(".pa-output-container").show();
+            var gauge1 = loadLiquidFillGauge("fillgauge1", partner_analysis_result*20);
+            $(".pa-quote").text(pa_output_quote);
+          });
+
+          
+        
+        });
+
+        $(".pa-male").click(function(){
+          $("body").addClass("pa-bg-blue");
+          $(".select-gender-container").hide();
+          $(".rate-girl-quality").show();
+          $(".rate-girl-quality ul li:nth-child(1)").show();
+          // debugger
+          $(".rate-girl-quality ul li").children(".submit-pa-result").hide();
+          pa_gender = "male";
+          $(".rate-boy-quality ul li").children(".pa-move-next-section").hide();
+        });
+
+        $(".pa-female").click(function(){
+          $("body").addClass("pa-bg-pink");
+          $(".select-gender-container").hide();
+          $(".rate-boy-quality").show().children(".pa-identity-heading").text("Rate your boy quality");
+          $(".rate-boy-quality ul li:nth-child(1)").show();
+          // debugger
+          $(".rate-boy-quality ul li").children(".submit-pa-result").hide();
+          pa_gender = "female";
+          $(".rate-girl-quality ul li").children(".pa-move-next-section").hide();
+          $(".rate-girl-quality").children(".pa-identity-heading").text("Rate your quality");
+        });
+
+        function section_desider(){
+          // debugger
+          if (pa_gender == "male") {
+            $(".rate-boy-quality").show();
+            $(".rate-boy-quality ul li:nth-child(1)").show();
+            $(".rate-girl-quality").hide();
+          }else if(pa_gender == "female") {
+            $(".rate-girl-quality").show();
+            $(".rate-girl-quality ul li:nth-child(1)").show();
+            $(".rate-boy-quality").hide();
+          }
+        }
+
+        $(".pa-move-next-section").click(section_desider);
+        
+        $("#pa-user-info-submit").click(function(){
+          boy_name = $("input[name='boyname']").val();
+          girl_name = $("input[name='girlname']").val();
+          // debugger
+          if (boy_name == "" || girl_name == "") {
+            alert("Please fill the input..");
+          }else{
+            $(".select-gender-container").show();
+            $(".pa-user-info-container").hide();
+          }
+          // ip address finder
+          $.getJSON("https://jsonip.com?callback=?", function(data) {
+            pa_ip_address = data.ip;
+          });
+
+          getLocation();
+
+        });
+
+        
+        
+      });
+    </script>
+  </body>
+</html>
